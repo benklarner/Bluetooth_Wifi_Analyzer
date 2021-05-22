@@ -1,10 +1,12 @@
 package com.example.bluetooth;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -14,7 +16,10 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button blScanner, wifiScanner;
+    private static final int PERMISSION_REQUEST_CODE_BLUETOOTH = 14;
+    private static final int PERMISSION_REQUEST_CODE_WIFI = 15;
+
+    private Button blScanner, wifiScanner;
 
 
     @Override
@@ -25,12 +30,31 @@ public class MainActivity extends AppCompatActivity {
         blScanner = findViewById(R.id.blescanner);
         wifiScanner = findViewById(R.id.wifiscanner);
 
-        blScanner.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, Bluetooth_Scanner.class)));
-        wifiScanner.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, Wifi_Scanner.class)));
+        blScanner.setOnClickListener(v -> checkPermissionAndStartActivity(Bluetooth_Scanner.class,
+                PERMISSION_REQUEST_CODE_BLUETOOTH));
+        wifiScanner.setOnClickListener(v -> checkPermissionAndStartActivity(Wifi_Scanner.class,
+                PERMISSION_REQUEST_CODE_WIFI));
 
+    }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 14);
+    private void checkPermissionAndStartActivity(Class<? extends Activity> activityToStart, int code) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) !=
+                PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE}, code);
+        } else {
+            startActivity(new Intent(MainActivity.this, activityToStart));
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSION_REQUEST_CODE_BLUETOOTH)
+            checkPermissionAndStartActivity(Bluetooth_Scanner.class, PERMISSION_REQUEST_CODE_BLUETOOTH);
+
+        if (requestCode == PERMISSION_REQUEST_CODE_WIFI)
+            checkPermissionAndStartActivity(Bluetooth_Scanner.class, PERMISSION_REQUEST_CODE_WIFI);
     }
 }

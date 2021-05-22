@@ -73,7 +73,11 @@ public class Wifi_Scanner extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(wifiReceiver);
+        try {
+            unregisterReceiver(wifiReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "wifireceiver is already unregistered");
+        }
     }
 
     private void scanWifi() {

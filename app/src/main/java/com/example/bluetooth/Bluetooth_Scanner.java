@@ -12,7 +12,6 @@ package com.example.bluetooth;
         import android.content.IntentFilter;
         import android.content.pm.PackageManager;
         import android.os.Bundle;
-        import android.view.View;
         import android.widget.ArrayAdapter;
         import android.widget.Button;
         import android.widget.ListView;
@@ -43,45 +42,35 @@ public class Bluetooth_Scanner extends AppCompatActivity {
         setContentView(R.layout.bluetooth_scanner);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        listDevicesFound = (ListView) findViewById(R.id.devicesfound);
-        btnScanDevice = (Button) findViewById(R.id.scandevice);
+        registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED));
+        registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        listDevicesFound = (ListView) findViewById(R.id.devicesfound);
+        btnScanDevice = (Button) findViewById(R.id.scandevice);
+        stateBluetooth = (TextView) findViewById(R.id.bluetoothstate);
 
         //Adapter
         listAdapter = new ArrayAdapter<String>(Bluetooth_Scanner.this, android.R.layout.simple_list_item_1);
         leDeviceListAdapter = new LeDeviceListAdapter(Bluetooth_Scanner.this, R.layout.list_adapter_view, new ArrayList<>() );
         listDevicesFound.setAdapter(leDeviceListAdapter);
 
-        //BLE STATE
-        // CheckBlueToothState();
+        btnScanDevice.setOnClickListener(view -> onScanDeviceClick());
+    }
 
-        //register Receiver for BLE actions
+    private void onScanDeviceClick() {
+        registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 
-        registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED));
-        registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
-
-        stateBluetooth = (TextView) findViewById(R.id.bluetoothstate);
-
-        btnScanDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-
-                if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
-                    //check location
-                    if (checkCoarseLocationPermission()) {
-                        leDeviceListAdapter.clear();
-                        bluetoothAdapter.startDiscovery();
-                    }
-                } else {
-                    CheckBlueToothState();
-                }
+        if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
+            //check location
+            if (checkCoarseLocationPermission()) {
+                leDeviceListAdapter.clear();
+                bluetoothAdapter.startDiscovery();
             }
-        });
-        checkCoarseLocationPermission();
-
+        } else {
+            checkBlueToothState();
+        }
     }
 
 
@@ -91,15 +80,16 @@ public class Bluetooth_Scanner extends AppCompatActivity {
     }
 
     private boolean checkCoarseLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_ACCESS_LOCATION);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ACCESS_LOCATION);
             return false;
         } else {
             return true;
         }
     }
 
-    private void CheckBlueToothState() {
+    private void checkBlueToothState() {
         if (bluetoothAdapter == null) {
             stateBluetooth.setText("Bluetooth NOT supported");
         } else {
@@ -121,18 +111,10 @@ public class Bluetooth_Scanner extends AppCompatActivity {
 
 
     @Override
-    protected void onDestroy() {
-        // TODO Auto-generated method stub
-        super.onDestroy();
-    }
-
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT) {
-            CheckBlueToothState();
+            onScanDeviceClick();
         }
     }
 
