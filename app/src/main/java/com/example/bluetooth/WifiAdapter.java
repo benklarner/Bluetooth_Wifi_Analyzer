@@ -31,9 +31,6 @@ public class WifiAdapter extends ArrayAdapter<WifiAP> {
 
 
     public WifiAP getDeviceByAddress(String address) {
-
-        //Log.d("WIFIADAPTER", address);
-
         if (scanResults != null && !scanResults.isEmpty()) {
             for (WifiAP wifiAP : scanResults) {
                 if (wifiAP.BSSID.equals(address)) return wifiAP;
