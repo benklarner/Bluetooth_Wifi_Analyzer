@@ -39,9 +39,9 @@ public class Wifi_Scanner extends AppCompatActivity {
     private ListView listView;
     private Button buttonScan;
     private int size = 0;
-    private ArrayList<ScanResult> results;
+    //private ArrayList<ScanResult> results;
     private WifiAdapter wifiAdapter;
-    private static final String TAG= "WIFISCANNER";
+    private static final String TAG = "WIFISCANNER";
 
 
     @Override
@@ -52,7 +52,7 @@ public class Wifi_Scanner extends AppCompatActivity {
         listView = findViewById(R.id.wifiList);
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         checkWifiState();
-        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
 
         wifiAdapter = new WifiAdapter(Wifi_Scanner.this, R.layout.list_adapter_view, new ArrayList<>());
         listView.setAdapter(wifiAdapter);
@@ -64,8 +64,6 @@ public class Wifi_Scanner extends AppCompatActivity {
                 if (checkCoarseLocationPermission()) {
                     scanWifi();
                 }
-
-
             }
         });
     }
@@ -82,13 +80,14 @@ public class Wifi_Scanner extends AppCompatActivity {
 
     private void scanWifi() {
         //buttonScan.setClickable(false);
+        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
         buttonScan.setText("Scanning...");
         boolean success = wifiManager.startScan();
         if (!success) {
             // scan failure handling
             scanFailure();
         }
-
         Toast.makeText(this, "Scanning WiFi ...", Toast.LENGTH_SHORT).show();
     }
 
@@ -96,12 +95,9 @@ public class Wifi_Scanner extends AppCompatActivity {
     BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             boolean success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false);
-
             if (success) {
-                    scanSuccess();
-
+                scanSuccess();
             } else {
                 // scan failure handling
                 scanFailure();
@@ -112,29 +108,25 @@ public class Wifi_Scanner extends AppCompatActivity {
     public void scanFailure() {
         // handle failure: new scan did NOT succeed
         // consider using old scan results: these are the OLD results!
-        results = (ArrayList<ScanResult>) wifiManager.getScanResults();
+        ArrayList<ScanResult> results = (ArrayList<ScanResult>) wifiManager.getScanResults();
     }
 
     private void scanSuccess() {
-
-        results = (ArrayList<ScanResult>) wifiManager.getScanResults();
-
+        ArrayList<ScanResult> results = (ArrayList<ScanResult>) wifiManager.getScanResults();
         for (ScanResult scanResult : results) {
-
+            Log.d(TAG, scanResult.SSID);
             WifiAP wifiAP = wifiAdapter.getDeviceByAddress(scanResult.BSSID);
 
-            if (wifiAP == null){
-                wifiAP = new WifiAP(scanResult.SSID, scanResult.BSSID, scanResult.capabilities,scanResult.level, scanResult.frequency, (String) scanResult.venueName);
+            if (wifiAP == null) {
+                wifiAP = new WifiAP(scanResult.SSID, scanResult.BSSID, scanResult.capabilities, scanResult.level, scanResult.frequency, (String) scanResult.venueName);
                 wifiAdapter.add(wifiAP);
-
-            }else {
+            }
+            else {
                 wifiAP.setRSSI(scanResult.level);
             }
-            wifiAdapter.notifyDataSetChanged();
+           // wifiAdapter.notifyDataSetChanged();
         }
-        unregisterReceiver(wifiReceiver);
-
-        buttonScan.setActivated(true);
+       // buttonScan.setActivated(true);
         buttonScan.setText("Scan Wifi");
     }
 

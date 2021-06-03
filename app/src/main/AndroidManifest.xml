@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -30,8 +34,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".Bluetooth_Scanner"
+            android:label="Bluetooth Scanner"
             android:parentActivityName=".MainActivity"/>
         <activity android:name=".Wifi_Scanner"
+            android:label="Wifi Scanner"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".BLE_Scanner"
+            android:label="BLE Scanner"
             android:parentActivityName=".MainActivity"/>
     </application>
 

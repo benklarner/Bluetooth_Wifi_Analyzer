@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/blelist"
+        android:layout_width="match_parent"
+        android:layout_height="312dp"
+        android:layout_weight="0.97"/>
+
+    <ToggleButton
+        android:id="@+id/scanBLEBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:layout_margin="15dp"
+        android:background="@color/purple_500"
+        android:textOff="Scan BLE"
+        android:textOn="Scanning..."
+        />
+
+</LinearLayout>

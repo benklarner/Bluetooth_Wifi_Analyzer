@@ -12,12 +12,18 @@ package com.example.bluetooth;
         import android.content.IntentFilter;
         import android.content.pm.PackageManager;
         import android.os.Bundle;
+        import android.os.Environment;
         import android.widget.ArrayAdapter;
         import android.widget.Button;
         import android.widget.ListView;
         import android.widget.TextView;
         import android.widget.Toast;
 
+        import org.json.JSONArray;
+
+        import java.io.File;
+        import java.io.FileOutputStream;
+        import java.io.IOException;
         import java.util.ArrayList;
 
 
@@ -26,6 +32,8 @@ public class Bluetooth_Scanner extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_ACCESS_LOCATION = 11;
+    private final int STORAGE_PERMISSION_CODE = 1;
+
 
     ListView listDevicesFound;
     Button btnScanDevice;
@@ -33,7 +41,8 @@ public class Bluetooth_Scanner extends AppCompatActivity {
     BluetoothAdapter bluetoothAdapter;
     ArrayAdapter<String> listAdapter;
     LeDeviceListAdapter leDeviceListAdapter;
-
+    private JSONArray jsonArray;
+    private ArrayList< ArrayList<String>> outputArray = new ArrayList();
 
 
     @Override
@@ -168,6 +177,25 @@ public class Bluetooth_Scanner extends AppCompatActivity {
 
         }
     };
+
+
+
+
+    private void saveToExternalStorage() {
+        String FILENAME = "Bluetooth-Werte.json";
+        String stringArray = jsonArray.toString();
+        File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "GesturePack");
+        File myFile = new File(folder, FILENAME);
+        FileOutputStream fstream = null;
+        try {
+            fstream = new FileOutputStream(myFile);
+            fstream.write(stringArray.getBytes());
+            fstream.close();
+            Toast.makeText(this, "File: " + FILENAME + " saved in Gesture Folder", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

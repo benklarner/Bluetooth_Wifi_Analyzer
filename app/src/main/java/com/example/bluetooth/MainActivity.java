@@ -18,8 +18,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE_BLUETOOTH = 14;
     private static final int PERMISSION_REQUEST_CODE_WIFI = 15;
+    private final int STORAGE_PERMISSION_CODE = 1;
 
-    private Button blScanner, wifiScanner;
+    private Button blScanner, wifiScanner, bleScanner;
 
 
     @Override
@@ -27,13 +28,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        blScanner = findViewById(R.id.blescanner);
+        blScanner = findViewById(R.id.bluetoothscanner);
         wifiScanner = findViewById(R.id.wifiscanner);
+        bleScanner = findViewById(R.id.blescanner);
 
         blScanner.setOnClickListener(v -> checkPermissionAndStartActivity(Bluetooth_Scanner.class,
                 PERMISSION_REQUEST_CODE_BLUETOOTH));
         wifiScanner.setOnClickListener(v -> checkPermissionAndStartActivity(Wifi_Scanner.class,
                 PERMISSION_REQUEST_CODE_WIFI));
+        bleScanner.setOnClickListener(v -> checkPermissionAndStartActivity(BLE_Scanner.class,
+                PERMISSION_REQUEST_CODE_BLUETOOTH));
 
     }
 
@@ -42,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
                 PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_PHONE_STATE}, code);
+        } else if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, code);
         } else {
             startActivity(new Intent(MainActivity.this, activityToStart));
         }
