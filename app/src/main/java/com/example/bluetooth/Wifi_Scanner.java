@@ -54,6 +54,7 @@ public class Wifi_Scanner extends AppCompatActivity {
         checkWifiState();
 
 
+
         wifiAdapter = new WifiAdapter(Wifi_Scanner.this, R.layout.list_adapter_view, new ArrayList<>());
         listView.setAdapter(wifiAdapter);
 
