@@ -225,7 +225,7 @@ public class BLE_Scanner extends AppCompatActivity {
             fstream = new FileOutputStream(myFile);
             fstream.write(stringArray.getBytes());
             fstream.close();
-            Toast.makeText(this, "File: " + FILENAME + " saved in Gesture Folder", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "File: " + FILENAME + " saved in Folder", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
         }
